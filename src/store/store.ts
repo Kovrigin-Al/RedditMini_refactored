@@ -1,15 +1,19 @@
 import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit';
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 import { postsAPI } from './posts/postsAPI';
+import { subredditsAPI } from './subreddits/subredditsAPI';
 import toastReducer from './toastSlice';
+import postsReducer from './posts/postsSlice';
 
 export const store = configureStore({
   reducer: {
     [postsAPI.reducerPath]: postsAPI.reducer,
-    toasts: toastReducer
+    posts: postsReducer, 
+    toasts: toastReducer,
+    [subredditsAPI.reducerPath]: subredditsAPI.reducer
   },
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(postsAPI.middleware)
+    getDefaultMiddleware().concat(postsAPI.middleware, subredditsAPI.middleware)
 });
 
 export type AppDispatch = typeof store.dispatch;

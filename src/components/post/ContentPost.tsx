@@ -20,7 +20,6 @@ const ContentPost: FC<Props> = ({ post, className }) => {
   const isOnScreen = useOnScreen(ref, [0.9]);
 
   if (post.post_hint?.includes(":video")) {
-    console.log(post);
     const url =
       post.post_hint === "hosted:video"
         ? post.media.reddit_video.hls_url

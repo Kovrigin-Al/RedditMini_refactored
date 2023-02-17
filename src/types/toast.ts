@@ -7,7 +7,7 @@ export enum NotificationType {
 }
 
 export interface IToast {
-  id: string,
+  id: number,
   message: string,
   type: NotificationType
 }

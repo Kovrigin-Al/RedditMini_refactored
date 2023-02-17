@@ -1,5 +1,7 @@
 import { ChatBubbleBottomCenterIcon } from "@heroicons/react/24/outline";
-import React, { FC } from "react";
+import { FC, useCallback } from "react";
+import { useAppDispatch } from "../../store/store";
+import { notifyError, notifySuccess } from "../../store/toastSlice";
 import { IPost } from "../../types/posts";
 import { bigNumsFormatter } from "../../utils/bigNumFormatter";
 import DropdDown from "../ui/DropdDown";
@@ -10,19 +12,26 @@ type Props = {
   post: IPost;
 };
 
-const HandleCopyButtonClick = (link: string) => {
-  navigator.clipboard.writeText(link).then(() => {
-    /* clipboard successfully set */
-    alert('copied')
-  }, () => {
-    /* clipboard write failed */
-  });
-}
-
 const FooterPost: FC<Props> = ({ post, className }) => {
+  const dispatch = useAppDispatch();
+
+  const HandleCopyButtonClick = useCallback(
+    (link: string) => {
+      const id = Date.now();
+
+      navigator.clipboard.writeText(link).then(
+        () => {
+          dispatch(notifySuccess({ message: "Copied link!", id }));
+        },
+        () => {
+          dispatch(notifyError({ message: "Something went wrong", id }));
+        }
+      );
+    },
+    [dispatch]
+  );
   return (
     <div className={className}>
-
       <VoterPost
         votes={post.ups}
         className="sm:hidden flex h-full justify-between w-20 items-center mx-4"
@@ -35,11 +44,20 @@ const FooterPost: FC<Props> = ({ post, className }) => {
         </div>
       </div>
 
-
       <div>
-        <DropdDown buttonName="Share" optionsList={[{name: 'Copy Link', callback: ()=>HandleCopyButtonClick('https://www.reddit.com/'+post.permalink)}]}/>
+        <DropdDown
+          buttonName="Share"
+          optionsList={[
+            {
+              name: "Copy Link",
+              callback: () =>
+                HandleCopyButtonClick(
+                  "https://www.reddit.com/" + post.permalink
+                ),
+            },
+          ]}
+        />
       </div>
-
     </div>
   );
 };

@@ -342,3 +342,9 @@ export interface ITransformedPosts {
     hasMore: boolean,
     after: string
 }
+
+export enum FeedType {
+    hot='hot',
+    search='search',
+    subreddit='subreddit'
+}

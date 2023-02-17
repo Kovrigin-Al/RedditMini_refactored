@@ -1,5 +1,5 @@
 import { FC } from "react";
-import SearchBar from "./ui/SearchBar";
+import SearchBar from "./SearchBar";
 
 type Props = {};
 
