@@ -8,44 +8,25 @@ export const postsAPI = createApi({
     baseUrl: 'https://www.reddit.com/',
   }),
   endpoints: build => ({
-    getPosts: build.query<ITransformedPosts, { limit?: number, after: string }>({
-      query: ({ limit = 8, after }) => ({
-        url: '.json',
+    getPosts: build.query<ITransformedPosts, { limit?: number, searchParam: string, after?: string }>({
+      query: ({ limit = 8, after, searchParam }) => ({
+        url: searchParam ? 'search.json' : '.json',
         params: {
           limit,
-          ...(after && { after })
+          ...(after && { after }),
+          ...(searchParam && { q: searchParam })
         }
       }),
-      // Only have one cache entry because the arg always maps to one string
-      serializeQueryArgs: ({ endpointName }) => endpointName,
-      // Always merge incoming data to the cache entry
-      merge: (currentCache, newItems) => {
-        currentCache.posts.push(...newItems.posts)
+      serializeQueryArgs: ({ endpointName, queryArgs }) => { return queryArgs.searchParam ? 'search/' + queryArgs.searchParam : endpointName },
+      merge: (currentCache, newItems, otherArgs) => {
+        if (otherArgs.arg.after) { currentCache.posts.push(...newItems.posts) } else { currentCache = newItems }
         currentCache.after = newItems.after
         currentCache.hasMore = newItems.hasMore
       },
-      // Refetch when the after arg changes
       forceRefetch({ currentArg, previousArg }) {
-        return currentArg !== previousArg
+        return currentArg?.after !== previousArg?.after
       },
       transformResponse: (response: IPosts) => ({ posts: response.data.children, hasMore: !!response.data.after, after: response.data.after })
     }),
-    searchPosts: build.query<ITransformedPosts, { limit?: number, searchParam: string, after?: string }>({
-      query: ({ limit = 8, searchParam, after = '' }) => ({
-        url: 'search.json',
-        params: { limit, q: searchParam, ...(after && { after }) }
-      }),
-      serializeQueryArgs: ({queryArgs}) => { 
-        return queryArgs.searchParam},
-      merge: (currentCache, newItems) => {
-        currentCache.posts.push(...newItems.posts)
-        currentCache.after = newItems.after
-        currentCache.hasMore = newItems.hasMore
-      },
-      // forceRefetch({ currentArg, previousArg }) {
-      //   return currentArg !== previousArg
-      // },
-      transformResponse: (response: IPosts) => ({ posts: response.data.children, hasMore: !!response.data.after, after: response.data.after })
-    })
   })
 })

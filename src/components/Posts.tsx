@@ -1,9 +1,7 @@
-import { useCallback, useEffect, useRef, useState } from "react";
-import useDebounce from "../hooks/useDebounceCallback";
-import useDebounceValue from "../hooks/useDebounceValue";
+import { useCallback, useEffect, useRef } from "react";
 import { postsAPI } from "../store/posts/postsAPI";
-import { useAppSelector } from "../store/store";
-import { FeedType } from "../types/posts";
+import { setAfter } from "../store/posts/postsSlice";
+import { useAppDispatch, useAppSelector } from "../store/store";
 import LoadingPost from "./post/LoadingPost";
 import PostContainer from "./post/PostContainer";
 import LoadingSpinner from "./ui/LoadingSpinner";
@@ -11,42 +9,33 @@ import LoadingSpinner from "./ui/LoadingSpinner";
 type Props = {};
 
 const Posts = (props: Props) => {
-  const [after, setAfter] = useState("");
-  const feedType = useAppSelector((state) => state.posts.feedType);
   const searchRequest = useAppSelector((state) => state.posts.searchRequest);
+  const after = useAppSelector((state) => state.posts.after);
+  const dispatch = useAppDispatch()
 
-  // clean up the 'after' on search change. 'After' is a key of first post to request when the feed is scrolled down
-  useEffect (()=>{setAfter('')},[searchRequest])
-  
-  //define request type depend on the FeeType flag
-  let fetch;
-  switch (feedType) {
-    case FeedType.search:
-      fetch = () =>
-        postsAPI.useSearchPostsQuery({ searchParam: searchRequest, after });
-      break;
-    default:
-      fetch = () =>
-        postsAPI.useGetPostsQuery({
-          after,
-        });
-      break;
-  }
+  const [trigger, {isLoading, data, isError, isFetching}] = postsAPI.useLazyGetPostsQuery()
+  const fetchPosts = useCallback(()=>trigger({ searchParam: searchRequest, after }), [after, searchRequest, trigger])
+  useEffect(()=>{
+    fetchPosts();
+  }, [fetchPosts])
+ 
+  useEffect(()=>{
+      document.body.scrollIntoView();
+  }, [searchRequest])
 
-  const { isLoading, isError, data, isFetching } = fetch();
   const observer = useRef<IntersectionObserver>();
-  // the callback applies the intersection observer to the last post
+  // the callback applies the intersection observer to the last post and move it when new posts are loaded
   const lastPostRef = useCallback(
     (node: HTMLDivElement) => {
       if (observer.current) observer.current.disconnect();
       observer.current = new IntersectionObserver((entries) => {
         if (entries[0].isIntersecting) {
-          data && setAfter(data.after);
+          data && dispatch(setAfter(data.after));
         }
       });
       node && observer.current.observe(node);
     },
-    [data]
+    [data, dispatch]
   );
 
   return (
