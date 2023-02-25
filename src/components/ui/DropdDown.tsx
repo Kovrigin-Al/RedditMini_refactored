@@ -15,9 +15,9 @@ const DropdDown: FC<Props> = ({ buttonName, optionsList }) => {
   return (
     <Menu as="div" className="relative inline-block text-left">
       <div>
-        <Menu.Button className="inline-flex w-full justify-center rounded-sm px-4 py-2 text-base text-slate-600 hover:bg-gray-50 ">
+        <Menu.Button className="inline-flex w-full justify-center rounded-sm px-2 sm:px-4 py-2 text-base text-slate-600 hover:bg-gray-50 ">
+          <ShareIcon className="mr-1 my-auto h-5 w-5" aria-hidden="true" />
           {buttonName}
-          <ShareIcon className="ml-2 my-auto h-5 w-5" aria-hidden="true" />
         </Menu.Button>
       </div>
 
