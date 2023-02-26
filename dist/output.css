@@ -962,6 +962,14 @@ video {
   max-height: 600px;
 }
 
+.max-h-\[80vh\] {
+  max-height: 80vh;
+}
+
+.max-h-full {
+  max-height: 100%;
+}
+
 .min-h-\[400px\] {
   min-height: 400px;
 }
@@ -1086,6 +1094,10 @@ video {
 
 .max-w-\[90\%\] {
   max-width: 90%;
+}
+
+.max-w-full {
+  max-width: 100%;
 }
 
 .flex-shrink {
@@ -1438,6 +1450,14 @@ video {
 
 .to-pink-500 {
   --tw-gradient-to: #ec4899;
+}
+
+.object-contain {
+  object-fit: contain;
+}
+
+.object-cover {
+  object-fit: cover;
 }
 
 .p-2 {

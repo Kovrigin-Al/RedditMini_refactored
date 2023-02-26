@@ -50,10 +50,13 @@ const ContentPost: FC<Props> = ({ post, className }) => {
   if (post.post_hint === "image") {
     return (
       <div className={combineClasses(className, "flex justify-center")}>
+        <div className="max-h-[80vh] justify-center object-cover flex">
         <img
           src={findResolution(post.preview.images[0].resolutions)}
           alt="post"
-        />
+          className="max-w-full max-h-full"
+          />
+          </div>
       </div>
     );
   }

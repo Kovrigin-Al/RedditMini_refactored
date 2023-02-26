@@ -31,7 +31,7 @@ export const postsAPI = createApi({
       transformResponse: (response: IPosts) => ({ posts: response.data.children, hasMore: !!response.data.after, after: response.data.after })
     }),
     getPostComments: build.query<{ comments: IGetPostCommentsData[], more: Record<string, string[]> }, { postId: string, limit?: number, depth?: number, threaded?: boolean, truncate?: boolean }>({
-      query: ({ postId, limit = 10, depth = 0, threaded = false, truncate = true }) => {
+      query: ({ postId, limit = 100, depth = 0, threaded = false, truncate = true }) => {
         return {
           url: `/comments/${postId}`,
           params: { limit, depth, threaded, truncate }
